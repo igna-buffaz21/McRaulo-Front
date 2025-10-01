@@ -1,0 +1,399 @@
+import React, { useState } from 'react';
+
+interface OrderData {
+  totalItems: number;
+  subtotal: number;
+  deliveryFee: number;
+  taxes: number;
+  total: number;
+}
+
+interface PaymentMethod {
+  id: string;
+  name: string;
+  description: string;
+  icon: any
+}
+
+interface OrderType {
+  id: string;
+  name: string;
+  description: string;
+  icon: any
+  time: string;
+}
+
+export default function PaymentMethods() {
+  const [currentStep, setCurrentStep] = useState<number>(1); // 1: tipo pedido, 2: método pago, 3: resumen
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>('');
+  const [orderType, setOrderType] = useState<string>('');
+
+  const orderData: OrderData = {
+    totalItems: 7,
+    subtotal: 45.99,
+    deliveryFee: 2.50,
+    taxes: 4.60,
+    total: 53.09
+  };
+
+  const paymentMethods: PaymentMethod[] = [
+    {
+      id: 'credit-card',
+      name: 'Tarjeta de Crédito',
+      description: 'Visa, Mastercard, American Express',
+      icon: (
+        <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+        </svg>
+      )
+    },
+    {
+      id: 'debit-card',
+      name: 'Tarjeta de Débito',
+      description: 'Débito directo desde tu cuenta',
+      icon: (
+        <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+        </svg>
+      )
+    },
+    {
+      id: 'paypal',
+      name: 'PayPal',
+      description: 'Pago rápido y seguro con PayPal',
+      icon: (
+        <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      )
+    },
+    {
+      id: 'cash',
+      name: 'Efectivo',
+      description: 'Pagar en efectivo al recibir',
+      icon: (
+        <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+        </svg>
+      )
+    }
+  ];
+
+  const orderTypes: OrderType[] = [
+    {
+      id: 'takeaway',
+      name: 'Para Llevar',
+      description: 'Retira tu pedido en el local',
+      icon: (
+        <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+        </svg>
+      ),
+      time: 'Listo en 15-20 min'
+    },
+    {
+      id: 'dine-in',
+      name: 'Comer Aquí',
+      description: 'Disfruta en nuestro restaurante',
+      icon: (
+        <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M10.5 6L9 2l-1.5 4M15.5 6L14 2l-1.5 4M21 10a8 8 0 11-16 0" />
+        </svg>
+      ),
+      time: 'Servido en mesa'
+    }
+  ];
+
+  const getStepTitle = (): string => {
+    switch(currentStep) {
+      case 1: return 'Tipo de Pedido';
+      case 2: return 'Método de Pago';
+      case 3: return 'Confirmar Pedido';
+      default: return 'Finalizar Pedido';
+    }
+  };
+
+  const goBack = (): void => {
+    if (currentStep === 3) {
+      setCurrentStep(2);
+    } else if (currentStep === 2) {
+      setCurrentStep(1);
+      setSelectedPaymentMethod(''); // Limpiar método de pago al volver al paso 1
+    }
+  };
+
+  const goToNextStep = (): void => {
+    if (currentStep === 1 && orderType) {
+      setCurrentStep(2);
+    } else if (currentStep === 2 && selectedPaymentMethod) {
+      setCurrentStep(3);
+    }
+  };
+
+  const handleOrderTypeChange = (newOrderType: string): void => {
+    setOrderType(newOrderType);
+    if (newOrderType !== orderType) {
+      setSelectedPaymentMethod('');
+    }
+  };
+
+  const handlePaymentMethodChange = (methodId: string): void => {
+    setSelectedPaymentMethod(methodId);
+  };
+
+  const canProceed: any = currentStep === 3 && selectedPaymentMethod && orderType;
+
+  return (
+    <div className="h-screen bg-gray-50 flex flex-col">
+      
+      <div className="bg-red-600 text-white p-6 shadow-lg flex-shrink-0">
+        <div className="max-w-4xl mx-auto">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              {currentStep > 1 && (
+                <button 
+                  onClick={goBack}
+                  className="p-2 hover:bg-red-700 rounded-lg transition-colors"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                  </svg>
+                </button>
+              )}
+              <h1 className="text-2xl font-bold">{getStepTitle()}</h1>
+            </div>
+            <div className="flex items-center gap-4">
+              {/* Indicador de pasos */}
+              <div className="hidden sm:flex items-center gap-2">
+                {[1, 2, 3].map((step: number) => (
+                  <div key={step} className="flex items-center">
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
+                      step <= currentStep ? 'bg-white text-red-600' : 'bg-red-700 text-red-300'
+                    }`}>
+                      {step}
+                    </div>
+                    {step < 3 && (
+                      <div className={`w-8 h-0.5 mx-1 ${
+                        step < currentStep ? 'bg-white' : 'bg-red-700'
+                      }`} />
+                    )}
+                  </div>
+                ))}
+              </div>
+              <div className="bg-red-700 px-4 py-2 rounded-full">
+                <span className="text-lg font-medium">Total: ${orderData.total}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Contenido */}
+      <div className="flex-1 flex flex-col items-center justify-center px-4">
+        
+        {/* PASO 1: Tipo de pedido */}
+        {currentStep === 1 && (
+          <div className="w-full max-w-5xl bg-white rounded-2xl shadow-lg p-6 animate-in fade-in duration-300">
+            <div className="mb-6 text-center">
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">¿Cómo quieres tu pedido?</h2>
+              <p className="text-lg text-gray-600">Selecciona si vas a llevarlo o comer en el local</p>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+              {orderTypes.map((type: OrderType) => (
+                <div
+                  key={type.id}
+                  onClick={() => handleOrderTypeChange(type.id)}
+                  className={`p-6 border-2 rounded-xl cursor-pointer transition-all duration-200 hover:bg-gray-50 hover:scale-105 ${
+                    orderType === type.id
+                      ? 'border-red-500 bg-red-50 ring-2 ring-red-200 scale-105'
+                      : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                >
+                  <div className="text-center">
+                    <div className={`w-16 h-16 mx-auto mb-4 p-3 rounded-xl ${
+                      orderType === type.id ? 'bg-red-100 text-red-600' : 'bg-gray-100 text-gray-600'
+                    }`}>
+                      {type.icon}
+                    </div>
+                    <h3 className="font-bold text-gray-900 text-xl mb-2">{type.name}</h3>
+                    <p className="text-gray-600 mb-2">{type.description}</p>
+                    <span className="text-red-600 font-bold">{type.time}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Botón para continuar */}
+            {orderType && (
+              <div className="mt-6 text-center">
+                <button 
+                  onClick={goToNextStep}
+                  className="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-xl transition-all duration-200 hover:scale-105 transform flex items-center justify-center gap-2 mx-auto"
+                >
+                  Continuar
+                  <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* PASO 2: Métodos de pago */}
+        {currentStep === 2 && (
+          <div className="w-full max-w-5xl bg-white rounded-2xl shadow-lg p-6 animate-in fade-in duration-300">
+            <div className="mb-6 text-center">
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">Método de pago</h2>
+              <p className="text-lg text-gray-600">Selecciona cómo quieres pagar tu pedido</p>
+            </div>
+            
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+              {paymentMethods.map((method: PaymentMethod) => (
+                <div
+                  key={method.id}
+                  onClick={() => handlePaymentMethodChange(method.id)}
+                  className={`p-4 border-2 rounded-xl cursor-pointer transition-all duration-200 hover:bg-gray-50 hover:scale-105 ${
+                    selectedPaymentMethod === method.id
+                      ? 'border-red-500 bg-red-50 ring-2 ring-red-200 scale-105'
+                      : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                >
+                  <div className="text-center">
+                    <div className={`w-12 h-12 mx-auto mb-3 p-2 rounded-xl ${
+                      selectedPaymentMethod === method.id ? 'bg-red-100 text-red-600' : 'bg-gray-100 text-gray-600'
+                    }`}>
+                      {method.icon}
+                    </div>
+                    <h3 className="font-bold text-gray-900 text-lg mb-1">{method.name}</h3>
+                    <p className="text-gray-600 text-sm">{method.description}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Mini resumen del tipo de pedido seleccionado */}
+            <div className="p-3 bg-gray-50 rounded-xl text-center">
+              <p className="text-gray-600 text-sm">Tipo de pedido seleccionado:</p>
+              <p className="font-bold text-gray-900">
+                {orderTypes.find(t => t.id === orderType)?.name} - {orderTypes.find(t => t.id === orderType)?.time}
+              </p>
+            </div>
+
+            {/* Botón para continuar */}
+            {selectedPaymentMethod && (
+              <div className="mt-4 text-center">
+                <button 
+                  onClick={goToNextStep}
+                  className="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-xl transition-all duration-200 hover:scale-105 transform flex items-center justify-center gap-2 mx-auto"
+                >
+                  Ver Resumen
+                  <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* PASO 3: Resumen final */}
+        {currentStep === 3 && (
+          <div className="w-full max-w-4xl bg-white rounded-2xl shadow-lg p-8 animate-in fade-in duration-300">
+            <div className="mb-8 text-center">
+              <h2 className="text-3xl font-bold text-gray-900 mb-4">Resumen del pedido</h2>
+              <p className="text-xl text-gray-600">Revisa los detalles antes de confirmar</p>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              
+              {/* Selecciones realizadas */}
+              <div className="space-y-6">
+                <div className="bg-gray-50 p-6 rounded-xl">
+                  <h3 className="font-bold text-gray-900 text-xl mb-4">Detalles del pedido</h3>
+                  <div className="space-y-4">
+                    <div>
+                      <span className="text-gray-600 font-medium">Tipo de pedido:</span>
+                      <div className="flex items-center gap-3 mt-1">
+                        <div className="w-8 h-8 p-1 bg-red-100 text-red-600 rounded-lg">
+                          {orderTypes.find(t => t.id === orderType)?.icon}
+                        </div>
+                        <div>
+                          <p className="font-bold text-gray-900">
+                            {orderTypes.find(t => t.id === orderType)?.name}
+                          </p>
+                          <p className="text-red-600 font-medium text-sm">
+                            {orderTypes.find(t => t.id === orderType)?.time}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <span className="text-gray-600 font-medium">Método de pago:</span>
+                      <div className="flex items-center gap-3 mt-1">
+                        <div className="w-8 h-8 p-1 bg-red-100 text-red-600 rounded-lg">
+                          {paymentMethods.find(m => m.id === selectedPaymentMethod)?.icon}
+                        </div>
+                        <div>
+                          <p className="font-bold text-gray-900">
+                            {paymentMethods.find(m => m.id === selectedPaymentMethod)?.name}
+                          </p>
+                          <p className="text-gray-600 text-sm">
+                            {paymentMethods.find(m => m.id === selectedPaymentMethod)?.description}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Desglose de precios */}
+              <div>
+                <div className="bg-gray-50 p-6 rounded-xl">
+                  <h3 className="font-bold text-gray-900 text-xl mb-4">Desglose de costos</h3>
+                  <div className="space-y-3">
+                    <div className="flex justify-between text-lg">
+                      <span className="text-gray-600">Subtotal ({orderData.totalItems} productos)</span>
+                      <span className="text-gray-900 font-medium">${orderData.subtotal}</span>
+                    </div>
+                    <div className="flex justify-between text-lg">
+                      <span className="text-gray-600">Costo de entrega</span>
+                      <span className="text-gray-900 font-medium">${orderData.deliveryFee}</span>
+                    </div>
+                    <div className="flex justify-between text-lg">
+                      <span className="text-gray-600">Impuestos</span>
+                      <span className="text-gray-900 font-medium">${orderData.taxes}</span>
+                    </div>
+                    <div className="border-t pt-4">
+                      <div className="flex justify-between items-center">
+                        <span className="text-2xl font-bold text-gray-900">Total</span>
+                        <span className="text-3xl font-bold text-red-600">${orderData.total}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <button 
+                  disabled={!canProceed}
+                  className={`w-full mt-6 font-bold py-4 px-6 rounded-xl transition-all duration-200 flex items-center justify-center gap-3 text-xl ${
+                    canProceed
+                      ? 'bg-red-600 hover:bg-red-700 text-white hover:scale-105 transform'
+                      : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  }`}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                  Confirmar Pedido
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
