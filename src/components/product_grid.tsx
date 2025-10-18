@@ -57,6 +57,7 @@ export default function Terminal() {
       console.log("carrito " + product.nombre)
 
       const cart = agregarCarrito(product);
+      
       console.log("CARRITO ACTUALIZADO: ", cart);
       
     }

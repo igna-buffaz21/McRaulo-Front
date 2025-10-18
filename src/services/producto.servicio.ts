@@ -1,4 +1,4 @@
-import type { ProductosResponse, ProductosResponseDetail } from '@/interfaces/productos.interface';
+import type { IngredienteAModificarBurger, ProductosResponse, ProductosResponseDetail } from '@/interfaces/productos.interface';
 import { api } from './api.config'
 import { API_ROUTES } from '@/config/api-routes';
 
@@ -14,6 +14,14 @@ export const productoService = {
     async obtenerDetalleProducto(id: number): Promise<ProductosResponseDetail> {
 
         const response = await api.get<ProductosResponseDetail>(API_ROUTES.PRODUCTOS.OBTENER_DETALLE_PRODUCTO(id))
+
+        return response.data
+
+    },
+
+    async obtenerIngredienteAModificar(id: number) : Promise<IngredienteAModificarBurger[]> {
+
+        const response = await api.get<IngredienteAModificarBurger[]>(API_ROUTES.PRODUCTOS.OBTENER_INGREDIENTES_A_MODIFICAR(id))
 
         return response.data
 

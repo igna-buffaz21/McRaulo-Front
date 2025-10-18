@@ -1,6 +1,7 @@
 export type Extra = {
-    id_extra: number;
-    name: string;
+    id_ingrediente: number;
+    es_extra: boolean;
+    cantidad: number;
     price: number;
   };
   

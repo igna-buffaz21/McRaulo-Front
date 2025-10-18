@@ -1,12 +1,15 @@
-import React, { useState } from 'react';
-
-interface OrderData {
-  totalItems: number;
-  subtotal: number;
-  deliveryFee: number;
-  taxes: number;
-  total: number;
-}
+import React, { useState, useEffect } from "react";
+import {
+  loadCheckout,
+  updateOrderType,
+  updatePaymentMethod,
+  goBackStep,
+  saveCheckout,
+  emptyCheckout,
+} from "@/services/checkout.servicio";
+import { OrderType as OrderTypeEnum, PaymentMethod as PaymentMethodEnum } from "@/interfaces/checkout.interface";
+import { loadCart } from "@/services/carrito.servicio"; // para obtener el id_cart actual
+import { useNavigate } from "react-router-dom";
 
 interface PaymentMethod {
   id: string;
@@ -24,23 +27,33 @@ interface OrderType {
 }
 
 export default function PaymentMethods() {
-  const [currentStep, setCurrentStep] = useState<number>(1); // 1: tipo pedido, 2: método pago, 3: resumen
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>('');
-  const [orderType, setOrderType] = useState<string>('');
+  const cart = loadCart(); // obtenemos carrito actual
+  const [checkout, setCheckout] = useState(() => loadCheckout(cart.id_cart));
+  const navigate = useNavigate();
 
-  const orderData: OrderData = {
-    totalItems: 7,
-    subtotal: 45.99,
-    deliveryFee: 2.50,
-    taxes: 4.60,
-    total: 53.09
-  };
+  const [currentStep, setCurrentStep] = useState<number>(checkout.currentStep);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>(
+    checkout.paymentMethod?.toString() || ""
+  );
+  const [orderType, setOrderType] = useState<string>(
+    checkout.orderType?.toString() || ""
+  );
+
+  useEffect(() => {
+    saveCheckout({
+      id_cart: cart.id_cart,
+      currentStep,
+      orderType: orderType || null,
+      paymentMethod: selectedPaymentMethod || null,
+    });
+  }, [currentStep, orderType, selectedPaymentMethod]);
+  
 
   const paymentMethods: PaymentMethod[] = [
     {
-      id: 'credit-card',
-      name: 'Tarjeta de Crédito',
-      description: 'Visa, Mastercard, American Express',
+      id: 'mercado-pago',
+      name: 'Mercado Pago',
+      description: 'Debito, Credito o QR',
       icon: (
         <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
@@ -48,29 +61,9 @@ export default function PaymentMethods() {
       )
     },
     {
-      id: 'debit-card',
-      name: 'Tarjeta de Débito',
-      description: 'Débito directo desde tu cuenta',
-      icon: (
-        <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
-        </svg>
-      )
-    },
-    {
-      id: 'paypal',
-      name: 'PayPal',
-      description: 'Pago rápido y seguro con PayPal',
-      icon: (
-        <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-      )
-    },
-    {
       id: 'cash',
       name: 'Efectivo',
-      description: 'Pagar en efectivo al recibir',
+      description: 'Pagar en efectivo',
       icon: (
         <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
@@ -113,15 +106,6 @@ export default function PaymentMethods() {
     }
   };
 
-  const goBack = (): void => {
-    if (currentStep === 3) {
-      setCurrentStep(2);
-    } else if (currentStep === 2) {
-      setCurrentStep(1);
-      setSelectedPaymentMethod(''); // Limpiar método de pago al volver al paso 1
-    }
-  };
-
   const goToNextStep = (): void => {
     if (currentStep === 1 && orderType) {
       setCurrentStep(2);
@@ -130,15 +114,24 @@ export default function PaymentMethods() {
     }
   };
 
-  const handleOrderTypeChange = (newOrderType: string): void => {
-    setOrderType(newOrderType);
-    if (newOrderType !== orderType) {
-      setSelectedPaymentMethod('');
-    }
+  const goBack = (): void => {
+    const updated = goBackStep(cart.id_cart);
+    setCurrentStep(updated.currentStep);
+    setCheckout(updated);
   };
 
+  const handleOrderTypeChange = (newOrderType: string): void => {
+    setOrderType(newOrderType);
+    const updated = updateOrderType(cart.id_cart, newOrderType);
+    setCurrentStep(updated.currentStep);
+    setCheckout(updated);
+  };
+  
   const handlePaymentMethodChange = (methodId: string): void => {
     setSelectedPaymentMethod(methodId);
+    const updated = updatePaymentMethod(cart.id_cart, methodId);
+    setCurrentStep(updated.currentStep);
+    setCheckout(updated);
   };
 
   const canProceed: any = currentStep === 3 && selectedPaymentMethod && orderType;
@@ -181,7 +174,7 @@ export default function PaymentMethods() {
                 ))}
               </div>
               <div className="bg-red-700 px-4 py-2 rounded-full">
-                <span className="text-lg font-medium">Total: ${orderData.total}</span>
+                <span className="text-lg font-medium">Total: ${cart.totales.subtotal}</span>
               </div>
             </div>
           </div>
@@ -353,30 +346,29 @@ export default function PaymentMethods() {
               {/* Desglose de precios */}
               <div>
                 <div className="bg-gray-50 p-6 rounded-xl">
-                  <h3 className="font-bold text-gray-900 text-xl mb-4">Desglose de costos</h3>
                   <div className="space-y-3">
-                    <div className="flex justify-between text-lg">
-                      <span className="text-gray-600">Subtotal ({orderData.totalItems} productos)</span>
-                      <span className="text-gray-900 font-medium">${orderData.subtotal}</span>
-                    </div>
-                    <div className="flex justify-between text-lg">
-                      <span className="text-gray-600">Costo de entrega</span>
-                      <span className="text-gray-900 font-medium">${orderData.deliveryFee}</span>
-                    </div>
-                    <div className="flex justify-between text-lg">
-                      <span className="text-gray-600">Impuestos</span>
-                      <span className="text-gray-900 font-medium">${orderData.taxes}</span>
-                    </div>
+                  <div className="bg-gray-50 p-4 rounded-xl flex items-center justify-center">
+                    <button
+                      onClick={() => navigate('/carrito')}
+                      className="bg-white border-2 border-red-600 text-red-600 hover:bg-red-50 font-bold py-3 px-6 rounded-xl transition-all duration-200 hover:scale-105 transform flex items-center justify-center gap-2"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                      </svg>
+                      Ver Carrito
+                    </button>
+                  </div>
                     <div className="border-t pt-4">
                       <div className="flex justify-between items-center">
                         <span className="text-2xl font-bold text-gray-900">Total</span>
-                        <span className="text-3xl font-bold text-red-600">${orderData.total}</span>
+                        <span className="text-3xl font-bold text-red-600">${cart.totales.subtotal}</span>
                       </div>
                     </div>
                   </div>
                 </div>
 
-                <button 
+                <button
                   disabled={!canProceed}
                   className={`w-full mt-6 font-bold py-4 px-6 rounded-xl transition-all duration-200 flex items-center justify-center gap-3 text-xl ${
                     canProceed

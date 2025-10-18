@@ -55,3 +55,21 @@ export function agregarCarrito(item: CartItem): Cart { //agrega un item al carri
   return updated;
 }
 
+export function modificarItem(id: string, cambios: Partial<CartItem>): Cart {
+  const cart = loadCart();
+
+  // Buscar el item a modificar
+  const itemsActualizados = cart.items.map((item) =>
+    item.id === id
+      ? { ...item, ...cambios } // aplica los cambios recibidos
+      : item
+  );
+
+  const actualizado = recalc({ ...cart, items: itemsActualizados });
+  saveCart(actualizado);
+
+  console.log("CARRITO MODIFICADO:", actualizado);
+  return actualizado;
+}
+
+

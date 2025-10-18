@@ -32,3 +32,17 @@ export interface ingredientesBase {
     id_categoria: number;
     ingredientesBase: ingredientesBase[];
   }
+
+  export interface IngredienteAModificarBurger {
+    id_ingrediente: number;
+    nombreburger: string;
+    nombre: string;
+    precio: number;
+    cantidad: number;
+    max: number;
+    unidad_medida: string;
+    add: boolean;
+    remove: boolean;
+    imagen_url: string;
+  }
+  
