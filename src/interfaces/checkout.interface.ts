@@ -4,4 +4,3 @@ export interface Checkout {
     paymentMethod: string | null;   
     currentStep: number;
   }
-  

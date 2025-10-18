@@ -4,10 +4,8 @@ import {
   updateOrderType,
   updatePaymentMethod,
   goBackStep,
-  saveCheckout,
-  emptyCheckout,
+  saveCheckout
 } from "@/services/checkout.servicio";
-import { OrderType as OrderTypeEnum, PaymentMethod as PaymentMethodEnum } from "@/interfaces/checkout.interface";
 import { loadCart } from "@/services/carrito.servicio"; // para obtener el id_cart actual
 import { useNavigate } from "react-router-dom";
 
@@ -77,22 +75,14 @@ export default function PaymentMethods() {
       id: 'takeaway',
       name: 'Para Llevar',
       description: 'Retira tu pedido en el local',
-      icon: (
-        <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-        </svg>
-      ),
+      icon: "bolso.png",
       time: 'Listo en 15-20 min'
     },
     {
       id: 'dine-in',
       name: 'Comer Aquí',
       description: 'Disfruta en nuestro restaurante',
-      icon: (
-        <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M10.5 6L9 2l-1.5 4M15.5 6L14 2l-1.5 4M21 10a8 8 0 11-16 0" />
-        </svg>
-      ),
+      icon: "plato.png",
       time: 'Servido en mesa'
     }
   ];
@@ -188,28 +178,47 @@ export default function PaymentMethods() {
         {currentStep === 1 && (
           <div className="w-full max-w-5xl bg-white rounded-2xl shadow-lg p-6 animate-in fade-in duration-300">
             <div className="mb-6 text-center">
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">¿Cómo quieres tu pedido?</h2>
-              <p className="text-lg text-gray-600">Selecciona si vas a llevarlo o comer en el local</p>
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                ¿Cómo quieres tu pedido?
+              </h2>
+              <p className="text-lg text-gray-600">
+                Selecciona si vas a llevarlo o comer en el local
+              </p>
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
               {orderTypes.map((type: OrderType) => (
                 <div
                   key={type.id}
-                  onClick={() => handleOrderTypeChange(type.id)}
+                  onClick={() => setOrderType(type.id)}
                   className={`p-6 border-2 rounded-xl cursor-pointer transition-all duration-200 hover:bg-gray-50 hover:scale-105 ${
                     orderType === type.id
-                      ? 'border-red-500 bg-red-50 ring-2 ring-red-200 scale-105'
-                      : 'border-gray-200 hover:border-gray-300'
+                      ? "border-red-500 bg-red-50 ring-2 ring-red-200 scale-105"
+                      : "border-gray-200 hover:border-gray-300"
                   }`}
                 >
                   <div className="text-center">
-                    <div className={`w-16 h-16 mx-auto mb-4 p-3 rounded-xl ${
-                      orderType === type.id ? 'bg-red-100 text-red-600' : 'bg-gray-100 text-gray-600'
-                    }`}>
-                      {type.icon}
+                    <div
+                      className={`w-16 h-16 mx-auto mb-4 p-3 rounded-xl flex items-center justify-center overflow-hidden ${
+                        orderType === type.id
+                          ? "bg-red-100 text-red-600"
+                          : "bg-gray-100 text-gray-600"
+                      }`}
+                    >
+                      {typeof type.icon === "string" ? (
+                        <img
+                          src={type.icon}
+                          alt={type.name}
+                          className="w-10 h-10 object-contain"
+                        />
+                      ) : (
+                        type.icon
+                      )}
                     </div>
-                    <h3 className="font-bold text-gray-900 text-xl mb-2">{type.name}</h3>
+
+                    <h3 className="font-bold text-gray-900 text-xl mb-2">
+                      {type.name}
+                    </h3>
                     <p className="text-gray-600 mb-2">{type.description}</p>
                     <span className="text-red-600 font-bold">{type.time}</span>
                   </div>
@@ -217,22 +226,38 @@ export default function PaymentMethods() {
               ))}
             </div>
 
-            {/* Botón para continuar */}
+            {/* Botón para confirmar selección */}
             {orderType && (
               <div className="mt-6 text-center">
-                <button 
-                  onClick={goToNextStep}
+                <button
+                  onClick={() => {
+                    const updated = updateOrderType(cart.id_cart, orderType);
+                    setCheckout(updated);
+                    setCurrentStep(2);
+                  }}
                   className="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-xl transition-all duration-200 hover:scale-105 transform flex items-center justify-center gap-2 mx-auto"
                 >
-                  Continuar
-                  <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  Confirmar elección
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="w-5 h-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 5l7 7-7 7"
+                    />
                   </svg>
                 </button>
               </div>
             )}
           </div>
         )}
+
 
         {/* PASO 2: Métodos de pago */}
         {currentStep === 2 && (
@@ -246,7 +271,7 @@ export default function PaymentMethods() {
               {paymentMethods.map((method: PaymentMethod) => (
                 <div
                   key={method.id}
-                  onClick={() => handlePaymentMethodChange(method.id)}
+                  onClick={() => setSelectedPaymentMethod(method.id)}
                   className={`p-4 border-2 rounded-xl cursor-pointer transition-all duration-200 hover:bg-gray-50 hover:scale-105 ${
                     selectedPaymentMethod === method.id
                       ? 'border-red-500 bg-red-50 ring-2 ring-red-200 scale-105'
@@ -274,14 +299,18 @@ export default function PaymentMethods() {
               </p>
             </div>
 
-            {/* Botón para continuar */}
+            {/* Botón para confirmar selección */}
             {selectedPaymentMethod && (
-              <div className="mt-4 text-center">
+              <div className="mt-6 text-center">
                 <button 
-                  onClick={goToNextStep}
+                  onClick={() => {
+                    const updated = updatePaymentMethod(cart.id_cart, selectedPaymentMethod);
+                    setCheckout(updated);
+                    setCurrentStep(3);
+                  }}
                   className="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-xl transition-all duration-200 hover:scale-105 transform flex items-center justify-center gap-2 mx-auto"
                 >
-                  Ver Resumen
+                  Continuar
                   <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                   </svg>
@@ -290,6 +319,7 @@ export default function PaymentMethods() {
             )}
           </div>
         )}
+
 
         {/* PASO 3: Resumen final */}
         {currentStep === 3 && (
@@ -306,11 +336,24 @@ export default function PaymentMethods() {
                 <div className="bg-gray-50 p-6 rounded-xl">
                   <h3 className="font-bold text-gray-900 text-xl mb-4">Detalles del pedido</h3>
                   <div className="space-y-4">
+                    {/* Tipo de pedido */}
                     <div>
                       <span className="text-gray-600 font-medium">Tipo de pedido:</span>
                       <div className="flex items-center gap-3 mt-1">
-                        <div className="w-8 h-8 p-1 bg-red-100 text-red-600 rounded-lg">
-                          {orderTypes.find(t => t.id === orderType)?.icon}
+                        <div className="w-8 h-8 p-1 bg-red-100 text-red-600 rounded-lg flex items-center justify-center overflow-hidden">
+                          {(() => {
+                            const type = orderTypes.find(t => t.id === orderType);
+                            if (!type) return null;
+                            return typeof type.icon === "string" ? (
+                              <img
+                                src={type.icon}
+                                alt={type.name}
+                                className="w-full h-full object-contain"
+                              />
+                            ) : (
+                              type.icon
+                            );
+                          })()}
                         </div>
                         <div>
                           <p className="font-bold text-gray-900">
@@ -323,11 +366,24 @@ export default function PaymentMethods() {
                       </div>
                     </div>
                     
+                    {/* Método de pago */}
                     <div>
                       <span className="text-gray-600 font-medium">Método de pago:</span>
                       <div className="flex items-center gap-3 mt-1">
-                        <div className="w-8 h-8 p-1 bg-red-100 text-red-600 rounded-lg">
-                          {paymentMethods.find(m => m.id === selectedPaymentMethod)?.icon}
+                        <div className="w-8 h-8 p-1 bg-red-100 text-red-600 rounded-lg flex items-center justify-center overflow-hidden">
+                          {(() => {
+                            const method = paymentMethods.find(m => m.id === selectedPaymentMethod);
+                            if (!method) return null;
+                            return typeof method.icon === "string" ? (
+                              <img
+                                src={method.icon}
+                                alt={method.name}
+                                className="w-full h-full object-contain"
+                              />
+                            ) : (
+                              method.icon
+                            );
+                          })()}
                         </div>
                         <div>
                           <p className="font-bold text-gray-900">
@@ -347,18 +403,18 @@ export default function PaymentMethods() {
               <div>
                 <div className="bg-gray-50 p-6 rounded-xl">
                   <div className="space-y-3">
-                  <div className="bg-gray-50 p-4 rounded-xl flex items-center justify-center">
-                    <button
-                      onClick={() => navigate('/carrito')}
-                      className="bg-white border-2 border-red-600 text-red-600 hover:bg-red-50 font-bold py-3 px-6 rounded-xl transition-all duration-200 hover:scale-105 transform flex items-center justify-center gap-2"
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                      </svg>
-                      Ver Carrito
-                    </button>
-                  </div>
+                    <div className="bg-gray-50 p-4 rounded-xl flex items-center justify-center">
+                      <button
+                        onClick={() => navigate('/carrito')}
+                        className="bg-white border-2 border-red-600 text-red-600 hover:bg-red-50 font-bold py-3 px-6 rounded-xl transition-all duration-200 hover:scale-105 transform flex items-center justify-center gap-2"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                        </svg>
+                        Ver Carrito
+                      </button>
+                    </div>
                     <div className="border-t pt-4">
                       <div className="flex justify-between items-center">
                         <span className="text-2xl font-bold text-gray-900">Total</span>
@@ -372,8 +428,8 @@ export default function PaymentMethods() {
                   disabled={!canProceed}
                   className={`w-full mt-6 font-bold py-4 px-6 rounded-xl transition-all duration-200 flex items-center justify-center gap-3 text-xl ${
                     canProceed
-                      ? 'bg-red-600 hover:bg-red-700 text-white hover:scale-105 transform'
-                      : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                      ? "bg-red-600 hover:bg-red-700 text-white hover:scale-105 transform"
+                      : "bg-gray-300 text-gray-500 cursor-not-allowed"
                   }`}
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -385,6 +441,7 @@ export default function PaymentMethods() {
             </div>
           </div>
         )}
+
       </div>
     </div>
   );
