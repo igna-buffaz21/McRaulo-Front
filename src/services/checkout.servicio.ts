@@ -1,4 +1,4 @@
-import type { Checkout, OrderType, PaymentMethod } from "@/interfaces/checkout.interface";
+import type { Checkout } from "@/interfaces/checkout.interface";
 
 const CHECKOUT_KEY = "checkout";
 

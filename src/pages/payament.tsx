@@ -8,6 +8,8 @@ import {
 } from "@/services/checkout.servicio";
 import { loadCart } from "@/services/carrito.servicio"; // para obtener el id_cart actual
 import { useNavigate } from "react-router-dom";
+import { paymentService } from "@/services/payment.servicio";
+import type { CrearOrden } from "@/interfaces/payment.interface";
 
 interface PaymentMethod {
   id: string;
@@ -123,6 +125,27 @@ export default function PaymentMethods() {
     setCurrentStep(updated.currentStep);
     setCheckout(updated);
   };
+
+  async function crearOrden() {
+    try {
+      if (cart == null) {
+        return;
+      }
+
+      const crearOrden : CrearOrden = {
+        cart_products: cart.items,
+        checkout_steps: checkout 
+      }
+
+      const response = paymentService.crearOrden(crearOrden)
+
+      console.log(response);
+      
+    }
+    catch (error) {
+      console.log(error);
+    }
+  }
 
   const canProceed: any = currentStep === 3 && selectedPaymentMethod && orderType;
 
@@ -425,6 +448,7 @@ export default function PaymentMethods() {
                 </div>
 
                 <button
+                  onClick={crearOrden}
                   disabled={!canProceed}
                   className={`w-full mt-6 font-bold py-4 px-6 rounded-xl transition-all duration-200 flex items-center justify-center gap-3 text-xl ${
                     canProceed
