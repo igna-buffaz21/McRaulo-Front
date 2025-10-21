@@ -1,5 +1,4 @@
-import type { inherits } from "util";
-import type { Cart, CartItem } from "./carrito.interface";
+import type { CartItem } from "./carrito.interface";
 import type { Checkout } from "./checkout.interface";
 
 export interface CrearOrden{

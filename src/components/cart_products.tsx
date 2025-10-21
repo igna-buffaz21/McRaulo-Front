@@ -1,6 +1,6 @@
 import type { Cart, CartItem } from '@/interfaces/carrito.interface';
 import { loadCart, modificarItem, removeItem } from '@/services/carrito.servicio';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from './ui/button';
 import {
