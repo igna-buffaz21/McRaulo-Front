@@ -6,10 +6,12 @@ import {
   goBackStep,
   saveCheckout
 } from "@/services/checkout.servicio";
-import { loadCart } from "@/services/carrito.servicio"; // para obtener el id_cart actual
+import { loadCart } from "@/services/carrito.servicio";
 import { useNavigate } from "react-router-dom";
 import { paymentService } from "@/services/payment.servicio";
 import type { CrearOrden } from "@/interfaces/payment.interface";
+import { METODO_PAGO } from "@/config/const";
+import { Loader2 } from "lucide-react";
 
 interface PaymentMethod {
   id: string;
@@ -27,9 +29,11 @@ interface OrderType {
 }
 
 export default function PaymentMethods() {
-  const cart = loadCart(); // obtenemos carrito actual
+  const cart = loadCart();
   const [checkout, setCheckout] = useState(() => loadCheckout(cart.id_cart));
   const navigate = useNavigate();
+
+  const [loading, setLoading] = useState(false);
 
   const [currentStep, setCurrentStep] = useState<number>(checkout.currentStep);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>(
@@ -98,52 +102,39 @@ export default function PaymentMethods() {
     }
   };
 
-  const goToNextStep = (): void => {
-    if (currentStep === 1 && orderType) {
-      setCurrentStep(2);
-    } else if (currentStep === 2 && selectedPaymentMethod) {
-      setCurrentStep(3);
-    }
-  };
-
   const goBack = (): void => {
     const updated = goBackStep(cart.id_cart);
     setCurrentStep(updated.currentStep);
     setCheckout(updated);
   };
-
-  const handleOrderTypeChange = (newOrderType: string): void => {
-    setOrderType(newOrderType);
-    const updated = updateOrderType(cart.id_cart, newOrderType);
-    setCurrentStep(updated.currentStep);
-    setCheckout(updated);
-  };
   
-  const handlePaymentMethodChange = (methodId: string): void => {
-    setSelectedPaymentMethod(methodId);
-    const updated = updatePaymentMethod(cart.id_cart, methodId);
-    setCurrentStep(updated.currentStep);
-    setCheckout(updated);
-  };
-
   async function crearOrden() {
     try {
       if (cart == null) {
         return;
       }
 
+      setLoading(true); // 🔹 activa el modo "procesando"
+
       const crearOrden : CrearOrden = {
         cart_products: cart.items,
         checkout_steps: checkout 
       }
 
-      const response = paymentService.crearOrden(crearOrden)
+      const response = await paymentService.crearOrden(crearOrden)
 
       console.log(response);
-      
+
+      if (response.type == METODO_PAGO.MERCADO_PAGO && response.init_point) {
+        window.location.href = response.init_point;
+      }
+      else if (response.type == METODO_PAGO.EFECTIVO) {
+
+      }      
     }
     catch (error) {
       console.log(error);
+      setLoading(false); // 🔹 activa el modo "procesando"
     }
   }
 
@@ -449,23 +440,38 @@ export default function PaymentMethods() {
 
                 <button
                   onClick={crearOrden}
-                  disabled={!canProceed}
+                  disabled={!canProceed || loading}
                   className={`w-full mt-6 font-bold py-4 px-6 rounded-xl transition-all duration-200 flex items-center justify-center gap-3 text-xl ${
-                    canProceed
+                    canProceed && !loading
                       ? "bg-red-600 hover:bg-red-700 text-white hover:scale-105 transform"
                       : "bg-gray-300 text-gray-500 cursor-not-allowed"
                   }`}
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                  Confirmar Pedido
+                  {loading ? (
+                    <>
+                      <Loader2 className="w-6 h-6 animate-spin text-white" />
+                      Procesando pedido...
+                    </>
+                  ) : (
+                    <>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="w-6 h-6"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                      Confirmar Pedido
+                    </>
+                  )}
                 </button>
+
               </div>
             </div>
           </div>
         )}
-
       </div>
     </div>
   );
