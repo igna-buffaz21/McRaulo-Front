@@ -13,6 +13,24 @@ export interface ResponseOrden{
     init_point?: string
 }
 
+export interface ComprobarPagoResponse{
+    id_pedido: number,
+    fecha_hora: number,
+    tipo: string,
+    estado_pago: string
+}
+
+/*
+
+    {
+        "id_pedido": 74,
+        "fecha_hora": 1761331655,
+        "tipo": "dine-in",
+        "estado_pago": "approved"
+    }
+
+*/
+
 
 /*
                 message: "Pedido creado con Mercado Pago",

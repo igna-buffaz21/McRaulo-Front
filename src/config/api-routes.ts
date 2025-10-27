@@ -7,6 +7,7 @@ export const API_ROUTES = {
         OBTENER_INGREDIENTES_A_MODIFICAR: (id: number) => `${API_URL}/api/productos/obtenerIngredientesParaModificar/${id}`
     },
     PAYMENT: {
-        CREAR_ORDEN: `${API_URL}/api/payment/crearOrden`
+        CREAR_ORDEN: `${API_URL}/api/payment/crearOrden`,
+        COMPROBAR_PAGO: (idPedido: number, idPago: number) => `${API_URL}/api/payment/comprobarPago?idPedido=${idPedido}&idPago=${idPago}`
     }
 }
