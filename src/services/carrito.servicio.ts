@@ -3,7 +3,7 @@ import { v4 as uuid } from "uuid";
 
 const CART_KEY = "cart";
 
-function emptyCart(): Cart { //reinicia el carrito
+export function emptyCart(): Cart { //reinicia el carrito
   return {
     id_cart: crypto.randomUUID?.() || "cart_" + Date.now(),
     items: [],
@@ -68,5 +68,9 @@ export function modificarItem(id: string, cambios: Partial<CartItem>): Cart {
 
   console.log("CARRITO MODIFICADO:", actualizado);
   return actualizado;
+}
+
+export function clearCart(): void {
+  localStorage.removeItem(CART_KEY);
 }
 

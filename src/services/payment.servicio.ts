@@ -10,8 +10,8 @@ export const paymentService = {
         return response.data;
 
     },
-    async comprobarPago(pedidoId: number, paymentId: number): Promise<ComprobarPagoResponse> {
-        const response = await api.get<ComprobarPagoResponse>(API_ROUTES.PAYMENT.COMPROBAR_PAGO(pedidoId, paymentId));
+    async comprobarPago(pedidoId: number, paymentId: number): Promise<ComprobarPagoResponse[]> {
+        const response = await api.get<ComprobarPagoResponse[]>(API_ROUTES.PAYMENT.COMPROBAR_PAGO(pedidoId, paymentId));
 
         return response.data;
 
