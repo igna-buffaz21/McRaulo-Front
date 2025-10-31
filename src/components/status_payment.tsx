@@ -37,6 +37,13 @@ export default function StatusPayment() {
         try {
             const response = await paymentService.comprobarPago(idPedido, idPago);
 
+                // Validamos la respuesta antes de continuar
+            if (!response || response.length === 0) {
+                console.warn("⚠️ No se encontró ningún pago para el pedido:", idPedido);
+                setLoading(false);
+                return;
+            }
+
             if (response[0].estado_pago == 'approved') {
                 response[0].estado_pago = 'Aprobado';
             }
