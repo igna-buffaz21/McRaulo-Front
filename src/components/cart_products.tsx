@@ -55,6 +55,7 @@ export default function CartProducts() {
   }
 
   const total = cartItems?.totales.subtotal || 0
+
   const totalItems = cartItems?.items.length || 0
 
   return (
@@ -187,17 +188,24 @@ export default function CartProducts() {
 
           <div className="flex gap-4">
             <button
-            onClick={goToPayment}
-            className="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold py-4 px-6 rounded-xl transition-all duration-200 flex items-center justify-center gap-3 hover:scale-105 transform text-xl">
+              onClick={goToPayment}
+              disabled={totalItems === 0}
+              className={`flex-1 font-bold py-4 px-6 rounded-xl transition-all duration-200 flex items-center justify-center gap-3 text-xl ${
+                totalItems === 0
+                  ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  : 'bg-red-600 hover:bg-red-700 text-white hover:scale-105 transform'
+              }`}
+            >
               <svg xmlns="http://www.w3.org/2000/svg" className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
               </svg>
               Pagar Pedido
             </button>
-            
+
             <button 
-            onClick={backtoHome}
-            className="px-6 text-red-600 hover:text-red-700 font-medium hover:bg-red-50 rounded-xl transition-all duration-200 flex items-center gap-2">
+              onClick={backtoHome}
+              className="px-6 text-red-600 hover:text-red-700 font-medium hover:bg-red-50 rounded-xl transition-all duration-200 flex items-center gap-2"
+            >
               <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
               </svg>

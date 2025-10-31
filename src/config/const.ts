@@ -1,6 +1,6 @@
 export const METODO_PAGO = {
     MERCADO_PAGO: "mercado-pago",
-    EFECTIVO: 'efectivo'
+    EFECTIVO: 'cash'
 }
 
 /*

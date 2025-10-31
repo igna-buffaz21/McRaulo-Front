@@ -129,7 +129,7 @@ export default function PaymentMethods() {
         window.location.href = response.init_point;
       }
       else if (response.type == METODO_PAGO.EFECTIVO) {
-
+        navigate('/estado-pago?external_reference=' + response.idPedido)
       }      
     }
     catch (error) {
