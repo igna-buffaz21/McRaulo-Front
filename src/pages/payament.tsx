@@ -178,7 +178,7 @@ export default function PaymentMethods() {
                 ))}
               </div>
               <div className="bg-red-700 px-4 py-2 rounded-full">
-                <span className="text-lg font-medium">Total: ${cart.totales.subtotal}</span>
+                <span className="text-lg font-medium">Total: ${(cart.totales.subtotal).toFixed(2)}</span>
               </div>
             </div>
           </div>
@@ -432,7 +432,7 @@ export default function PaymentMethods() {
                     <div className="border-t pt-4">
                       <div className="flex justify-between items-center">
                         <span className="text-2xl font-bold text-gray-900">Total</span>
-                        <span className="text-3xl font-bold text-red-600">${cart.totales.subtotal}</span>
+                        <span className="text-3xl font-bold text-red-600">${(cart.totales.subtotal).toFixed(2)}</span>
                       </div>
                     </div>
                   </div>

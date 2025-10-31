@@ -175,7 +175,7 @@ export default function CartProducts() {
             <div className="space-y-3">
               <div className="flex justify-between text-lg">
                 <span className="text-gray-600">Subtotal ({totalItems} productos)</span>
-                <span className="text-gray-900 font-medium">${total}</span>
+                <span className="text-gray-900 font-medium">${(total).toFixed(2)}</span>
               </div>
               <div className="border-t pt-4">
                 <div className="flex justify-between items-center">
