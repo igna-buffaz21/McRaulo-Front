@@ -40,7 +40,6 @@ export function Cajero() {
   const [numeroPedido, setNumeroPedido] = useState("")
   const [pedidoEncontrado, setPedidoEncontrado] = useState<Pedido[]>([])
   const [buscando, setBuscando] = useState(false)
-  const [busquedaRealizada, setBusquedaRealizada] = useState(false)
   const [openDialogSuccess, setOpenDialogSuccess] = useState(false);
   const [openDialogAlert, setOpenDialogAlert] = useState(false);
 
@@ -48,7 +47,6 @@ export function Cajero() {
     if (!numeroPedido.trim()) return
 
     setBuscando(true)
-    setBusquedaRealizada(true)
 
     try {
         const response = await pedidoService.obtenerPedidoPendienteDePago(Number(numeroPedido));
@@ -83,7 +81,6 @@ export function Cajero() {
     // Limpiar después de confirmar
     setNumeroPedido("")
     setPedidoEncontrado([])
-    setBusquedaRealizada(false)
   }
 
   const handleKeyPress = (e: any) => {
