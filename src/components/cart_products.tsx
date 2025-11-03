@@ -86,87 +86,87 @@ export default function CartProducts() {
       {/* Contenido central - Ahora con padding y espacio flexible */}
       <div className="flex-1 flex flex-col items-center py-8 px-4 gap-6">
         
-        {/* VENTANA 1: Lista de productos con scroll interno - MISMO ANCHO QUE EL RESUMEN */}
-        <div className="w-full max-w-2xl h-96 bg-white rounded-2xl shadow-lg overflow-hidden">
-          <div className="p-6 border-b border-gray-200">
-            <h2 className="text-xl font-bold text-gray-900">Productos en tu carrito</h2>
-            <p className="text-gray-600">Modifica cantidades o elimina productos</p>
-          </div>
-          
-          {/* AQUÍ ES EL SCROLL INTERNO */}
-          <div className="h-72 overflow-y-auto p-4">
-            <div className="space-y-3">
-            {cartItems?.items.map((item) => (
-              <div
-                key={item.id}
-                className="bg-gray-50 rounded-xl p-4 hover:bg-gray-100 transition-all duration-300"
-              >
-                <div className="flex items-center gap-4">
-                  <img
-                    src={item.imagen_url}
-                    alt={item.nombre}
-                    className="w-20 h-20 rounded-xl object-cover flex-shrink-0"
-                  />
+      {/* VENTANA 1: Lista de productos con scroll interno - MISMO ANCHO QUE EL RESUMEN */}
+      <div className="w-full max-w-2xl bg-white rounded-2xl shadow-lg overflow-hidden flex flex-col" style={{height: '60vh'}}>
+        <div className="p-6 border-b border-gray-200 flex-shrink-0">
+          <h2 className="text-xl font-bold text-gray-900">Productos en tu carrito</h2>
+          <p className="text-gray-600">Agrega notas o elimina productos</p>
+        </div>
+        
+        {/* AQUÍ ES EL SCROLL INTERNO */}
+        <div className="flex-1 overflow-y-auto p-4">
+          <div className="space-y-3">
+          {cartItems?.items.map((item) => (
+            <div
+              key={item.id}
+              className="bg-gray-50 rounded-xl p-4 hover:bg-gray-100 transition-all duration-300"
+            >
+              <div className="flex items-center gap-4">
+                <img
+                  src={item.imagen_url}
+                  alt={item.nombre}
+                  className="w-20 h-20 rounded-xl object-cover flex-shrink-0"
+                />
 
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-bold text-gray-900 mb-1 text-lg">{item.nombre}</h3>
-                    <div className="flex items-center justify-between">
-                      <span className="font-bold text-red-600 text-lg">
-                        ${item.precio_base}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-2 flex-shrink-0">
-                    {/* Botón de editar (solo lápiz) */}
-                    <button
-                      onClick={() => abrirDialogNotas(item)}
-                      className="p-3 text-gray-400 hover:text-blue-500 hover:bg-blue-50 rounded-xl transition-all duration-200"
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="w-6 h-6"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M15.232 5.232a2.5 2.5 0 113.536 3.536L7.5 20.036l-4 1 1-4L15.232 5.232z"
-                        />
-                      </svg>
-                    </button>
-
-                    {/* Botón de eliminar */}
-                    <button
-                      onClick={() => removeItemC(item.id)}
-                      className="p-3 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all duration-200"
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="w-6 h-6"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                        />
-                      </svg>
-                    </button>
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-bold text-gray-900 mb-1 text-lg">{item.nombre}</h3>
+                  <div className="flex items-center justify-between">
+                    <span className="font-bold text-red-600 text-lg">
+                      ${item.precio_base}
+                    </span>
                   </div>
                 </div>
-              </div>
-            ))}
 
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  {/* Botón de editar (solo lápiz) */}
+                  <button
+                    onClick={() => abrirDialogNotas(item)}
+                    className="p-3 text-gray-400 hover:text-blue-500 hover:bg-blue-50 rounded-xl transition-all duration-200"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="w-6 h-6"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M15.232 5.232a2.5 2.5 0 113.536 3.536L7.5 20.036l-4 1 1-4L15.232 5.232z"
+                      />
+                    </svg>
+                  </button>
+
+                  {/* Botón de eliminar */}
+                  <button
+                    onClick={() => removeItemC(item.id)}
+                    className="p-3 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all duration-200"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="w-6 h-6"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                      />
+                    </svg>
+                  </button>
+                </div>
+              </div>
             </div>
+          ))}
+
           </div>
         </div>
+      </div>
 
         {/* VENTANA 2: Resumen y botón de pagar - MISMO ANCHO */}
         <div className="w-full max-w-2xl bg-white rounded-2xl shadow-lg p-6">

@@ -118,8 +118,8 @@ export default function Terminal() {
         isLoading={isLoading}
       />
 
-<Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="sm:max-w-[500px] p-0 overflow-hidden">
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent className="sm:max-w-[600px] p-0 overflow-hidden">
           {isLoadingDetalle ? (
             // Skeleton Loading
             <>
@@ -162,7 +162,7 @@ export default function Terminal() {
               </div>
 
               {/* Contenido */}
-              <div className="p-4">
+              <div className="p-5">
                 {/* Header */}
                 <DialogHeader className="mb-4">
                   <DialogTitle className="text-xl font-bold text-gray-900">
@@ -191,7 +191,7 @@ export default function Terminal() {
                       Ingredientes
                     </h3>
                     
-                    <div className="space-y-2 max-h-48 overflow-y-auto">
+                    <div className="space-y-2 max-h-80 overflow-y-auto">
                       {detalleProducto.ingredientesBase.map((ingrediente) => (
                         <div 
                           key={ingrediente.id_ingrediente} 
@@ -210,9 +210,6 @@ export default function Terminal() {
                               {ingrediente.descripcion}
                             </p>
                           </div>
-                          <span className="text-xs text-gray-500 bg-white px-2 py-1 rounded-full border font-medium ml-3">
-                            ${ingrediente.precio.toFixed(2)}
-                          </span>
                         </div>
                       ))}
                     </div>
@@ -238,18 +235,6 @@ export default function Terminal() {
           )}
         </DialogContent>
       </Dialog>
-
-      {filteredProducts.length === 0 && (
-        <div className="text-center py-12">
-          <div className="text-4xl mb-4">🍽️</div>
-          <h3 className="text-lg font-semibold text-gray-700 mb-2">
-            No hay productos disponibles
-          </h3>
-          <p className="text-gray-500">
-            En esta categoría no tenemos productos disponibles en este momento.
-          </p>
-        </div>
-      )}
     </div>
   );
 }

@@ -138,7 +138,7 @@ export function PedidosListos() {
                 <TableRow>
                   <TableHead className="w-[100px]">NUMERO</TableHead>
                   <TableHead>TIPO</TableHead>
-                  <TableHead className="text-right">PREPARACION</TableHead>
+                  <TableHead className="text-right">ENTREGAR</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
