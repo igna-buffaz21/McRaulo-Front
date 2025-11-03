@@ -89,6 +89,17 @@ export function Cajero() {
     }
   }
 
+      const formatearFecha = (timestamp: number): string => {
+      const fecha = new Date(timestamp * 1000);
+      return fecha.toLocaleString('es-AR', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      });
+    };
+
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -148,7 +159,7 @@ export function Cajero() {
                 <CardContent className="space-y-2">
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Fecha y Hora:</span>
-                    <span className="font-medium">{pedidoEncontrado[0]?.fecha_hora}</span>
+                    <span className="font-medium">{formatearFecha(pedidoEncontrado[0]?.fecha_hora)}</span>
                   </div>
                   <Separator />
                   <div className="flex justify-between">

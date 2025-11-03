@@ -102,16 +102,16 @@ export default function StatusPayment() {
         }
     }, [pedido]);
 
-    function formatearFecha(fechaHora: number): string {
-        const fecha = new Date(fechaHora);
-        return fecha.toLocaleString('es-ES', {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit'
-        });
-    }
+    const formatearFecha = (timestamp: number): string => {
+      const fecha = new Date(timestamp * 1000);
+      return fecha.toLocaleString('es-AR', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      });
+    };
 
     if (loading) {
         return (
